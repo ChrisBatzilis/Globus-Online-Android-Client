@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:background="@color/custom_blue" android:state_focused="true" android:text="@string/sign_up_string" android:textColor="@android:color/white"/>
+    <item android:background="#00000000" android:state_pressed="true" android:text="@string/sign_up_string" android:textColor="@color/android_light_blue"/>
+    <item android:background="#00000000" android:text="@string/sign_up_string" android:textColor="@color/custom_blue"/>
+
+</selector>
