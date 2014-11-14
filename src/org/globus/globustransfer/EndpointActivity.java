@@ -1,9 +1,5 @@
 package org.globus.globustransfer;
 
-import java.util.ArrayList;
-
-import org.globus.globustransfer.R;
-
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +11,13 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import org.globus.globustransfer.R;
+
+import java.util.ArrayList;
+
+
+
 
 public class EndpointActivity extends ListActivity {
 

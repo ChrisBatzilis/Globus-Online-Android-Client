@@ -1,7 +1,5 @@
 package org.globus.globustransfer;
 
-import org.globus.globustransfer.R;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -11,63 +9,47 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import org.globus.globustransfer.R;
 
 public class MenuActivity extends Activity {
 
 	protected String mUsername;
 	protected String mSamlCookie;
 	private AlertDialog mLogOut;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_menu);
-		
+
 		// The username and cookie are retrieved from the Intent
 		Intent mIntent = getIntent();
 		Bundle mInfo = mIntent.getExtras();
 		mUsername = mInfo.getString("username");
 		mSamlCookie = mInfo.getString("samlCookie");
 
-		if(savedInstanceState!=null)
-		{
-			if(savedInstanceState.getBoolean("isMenuActive"))
-					logout();
-			
+		if (savedInstanceState != null) {
+			if (savedInstanceState.getBoolean("isMenuActive"))
+				logout();
+
 		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		//getMenuInflater().inflate(R.menu.menu, menu);
 		return true;
 	}
 
-	/*
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		
-		// If the user selects logout the logout function is called
-		case R.id.logout_menu_item:
-			logout();
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
-
-*/
 	/**
 	 * Creates a Dialog asking the user if they really want to log out. If user
 	 * selects "YES", the activity is terminated, if they select "NO" the dialog
 	 * disappears.
 	 */
 	private void logout() {
-		mLogOut=new AlertDialog.Builder(this)
+		mLogOut = new AlertDialog.Builder(this)
 				.setCancelable(false)
 				.setMessage(R.string.log_out_question)
 				.setPositiveButton(R.string.yes,
@@ -87,16 +69,9 @@ public class MenuActivity extends Activity {
 
 	}
 
-	
-
 	@Override
 	public void onBackPressed() {
-		
-		//When the back button is pressed the user in notified that they can logout using the menu logout button
-	//	Toast.makeText(this, getString(R.string.logout_instructions),
-		//		Toast.LENGTH_SHORT).show();
 		logout();
-
 	}
 
 	/**
@@ -109,27 +84,24 @@ public class MenuActivity extends Activity {
 	 */
 	public void startMonitorActivity(View view) {
 
-		//An Intent is created in order to call the Monitor Activity
+		// An Intent is created in order to call the Monitor Activity
 		Intent mIntent = new Intent(this, MonitorActivity.class);
-		
-		//A Bundle is created in order to send information to the Monitor Activity
-		if(isInternetConnectionAvailable())
-		{
-		Bundle bundle = new Bundle();
-		bundle.putString("username", mUsername);
-		bundle.putString("samlCookie", mSamlCookie);
-		mIntent.putExtras(bundle);
-		startActivity(mIntent);
-		}
-		else
-		{
+
+		// A Bundle is created in order to send information to the Monitor
+		// Activity
+		if (isInternetConnectionAvailable()) {
+			Bundle bundle = new Bundle();
+			bundle.putString("username", mUsername);
+			bundle.putString("samlCookie", mSamlCookie);
+			mIntent.putExtras(bundle);
+			startActivity(mIntent);
+		} else {
 			Toast.makeText(this, getString(R.string.offline_warning),
-							Toast.LENGTH_SHORT).show();	
+					Toast.LENGTH_SHORT).show();
 		}
-		
+
 	}
 
-	
 	/**
 	 * It initiates an instance of the StartTransfer Activity, putting as extra
 	 * information within a Bundle the users' credentials.
@@ -140,25 +112,24 @@ public class MenuActivity extends Activity {
 	 */
 	public void startTransferActivity(View view) {
 
-		//An intent is created in order to call the StartTransfer Activity
+		// An intent is created in order to call the StartTransfer Activity
 		Intent mIntent = new Intent(this, StartTransfer.class);
-		
-		//A bundle is created in order to send information to the StartTransfer Activity
-		if(isInternetConnectionAvailable()){
-		Bundle mBundle = new Bundle();
-		mBundle.putString("username", mUsername);
-		mBundle.putString("samlCookie", mSamlCookie);
-		mIntent.putExtras(mBundle);
-		startActivity(mIntent);
-		}
-		else
-		{
+
+		// A bundle is created in order to send information to the StartTransfer
+		// Activity
+		if (isInternetConnectionAvailable()) {
+			Bundle mBundle = new Bundle();
+			mBundle.putString("username", mUsername);
+			mBundle.putString("samlCookie", mSamlCookie);
+			mIntent.putExtras(mBundle);
+			startActivity(mIntent);
+		} else {
 			Toast.makeText(this, getString(R.string.offline_warning),
-							Toast.LENGTH_SHORT).show();	
+					Toast.LENGTH_SHORT).show();
 		}
 
 	}
-	
+
 	/**
 	 * Checks if there is Internet Connection available.
 	 * 
@@ -173,23 +144,20 @@ public class MenuActivity extends Activity {
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
-			
-		if(mLogOut!=null)
-		{
-		outState.putBoolean("isMenuActive", mLogOut.isShowing());
+
+		if (mLogOut != null) {
+			outState.putBoolean("isMenuActive", mLogOut.isShowing());
 		}
-		}
+	}
 
 	@Override
 	protected void onStop() {
-		// TODO Auto-generated method stub
 		super.onStop();
-		if(mLogOut!=null)
-		{
-		mLogOut.dismiss();
-		}
 		
+		if (mLogOut != null) {
+			mLogOut.dismiss();
+		}
+
 	}
 }

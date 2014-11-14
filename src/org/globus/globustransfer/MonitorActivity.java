@@ -1,30 +1,5 @@
 package org.globus.globustransfer;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.security.GeneralSecurityException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.globus.globustransfer.R;
-import org.globus.globustransfer.R.color;
-import org.globus.globustransfer.StartTransfer.FilesTransfer;
-import org.globusonline.transfer.APIError;
-import org.globusonline.transfer.JSONTransferAPIClient;
-import org.globusonline.transfer.JSONTransferAPIClient.Result;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -59,6 +34,31 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import org.globus.globustransfer.R.color;
+import org.globusonline.transfer.APIError;
+import org.globusonline.transfer.JSONTransferAPIClient;
+import org.globusonline.transfer.JSONTransferAPIClient.Result;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.security.GeneralSecurityException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+
 
 public class MonitorActivity extends Activity {
 
@@ -714,8 +714,6 @@ public class MonitorActivity extends Activity {
 					.findViewById(R.id.progress);
 			ImageView mTypeImageView = (ImageView) mRow
 					.findViewById(R.id.task_type);
-		//	TextView mPerformanceTextView = (TextView) mRow
-		//			.findViewById(R.id.task_performance);
 
 			// The appropriate icon is set according to the task's status
 			if (mStatus.contentEquals("ACTIVE")) {
@@ -786,8 +784,6 @@ public class MonitorActivity extends Activity {
 
 		public int compare(String app1, String app2) {
 
-			String stringName1 = app1;
-			String stringName2 = app2;
 			JSONObject j1 = null, j2 = null;
 			float transferRate1 = 0, transferRate2 = 0;
 			for (int i = 0; i < mTasksJsonArray.length(); i++) {
@@ -1397,13 +1393,9 @@ public class MonitorActivity extends Activity {
 	@Override
 	
 	protected void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
-		List<String> tasks=new ArrayList<String>();
-		
 		
 		outState.putStringArrayList("tasksList", (ArrayList<String>) mTasksList);
-		
 		outState.putString("tasksJSONArray", mTasksJsonArray.toString());
 	}
 

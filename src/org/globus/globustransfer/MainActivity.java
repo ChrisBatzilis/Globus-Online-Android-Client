@@ -1,22 +1,5 @@
 package org.globus.globustransfer;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpCookie;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import org.globus.globustransfer.R;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +16,26 @@ import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.globus.globustransfer.R;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpCookie;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
+
+
+
 
 public class MainActivity extends Activity {
 
@@ -65,6 +68,7 @@ public class MainActivity extends Activity {
 		mRememberMeTextView = (TextView) findViewById(R.id.remember_me_text_view);
 		mContext = this;
 	}
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -102,28 +106,17 @@ public class MainActivity extends Activity {
 
 		String username = mUsernameTextView.getText().toString();
 		String password = mPasswordTextView.getText().toString();
-		if (!isInternetConnectionAvailable()) {
-			makeToast(mNetworkNotAvailable);
-			return;
-		}
-		if (username.length() == 0 && password.length() == 0) {
-			makeToast(getString(R.string.no_username_and_password_warning));
-			return;
-		}
-		if (username.length() == 0) {
-			makeToast(getString(R.string.no_username_warning));
-			return;
-		}
-		if (password.length() == 0) {
-			makeToast(getString(R.string.no_password_warning));
+		
+		if(!isSigninPrerequisitesSatisfied(username, password)){
 			return;
 		}
 		new signInAttempt().execute(username, password);
 
 	}
+	
 
 	/**
-	 * It creates a short-lived message on the screen.
+	 * Creates a short-lived message on the screen.
 	 * 
 	 * @param text
 	 *            The contents of the message
@@ -159,12 +152,35 @@ public class MainActivity extends Activity {
 					""));
 			mPasswordTextView.setText(mSharedPreferences.getString("password",
 					""));
-			mSwitch = false;
 		} else {
 			mUsernameTextView.setText("");
 			mPasswordTextView.setText("");
-			mSwitch = true;
 		}
+		mSwitch=!mSwitch;
+	}
+	
+	/**
+	 * Checks whether the user name and the password fields are filled and there
+	 * is a connection to the Internet
+	 */
+	private boolean isSigninPrerequisitesSatisfied(String username,String password){
+		if (!isInternetConnectionAvailable()) {
+			makeToast(mNetworkNotAvailable);
+			return false;
+		}
+		if (username.length() == 0 && password.length() == 0) {
+			makeToast(getString(R.string.no_username_and_password_warning));
+			return false;
+		}
+		if (username.length() == 0) {
+			makeToast(getString(R.string.no_username_warning));
+			return false;
+		}
+		if (password.length() == 0) {
+			makeToast(getString(R.string.no_password_warning));
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -185,17 +201,9 @@ public class MainActivity extends Activity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			
-			//The login-related fields and buttons temporarily disappear from the screen
-			mUsernameTextView.setVisibility(View.INVISIBLE);
-			mPasswordTextView.setVisibility(View.INVISIBLE);
-			mLogInButton = (Button) findViewById(R.id.log_in_button);
-			mLogInButton.setVisibility(View.INVISIBLE);
-			mAttemptLogInProgressBar.setVisibility(View.VISIBLE);
-			mRememberMeCheckBox.setVisibility(View.INVISIBLE);
-			mRememberMeTextView.setVisibility(View.INVISIBLE);
-
+			hideSignInRelatedViewItems();
 		}
+		
 
 		@Override
 		protected String doInBackground(String... credentials) {
@@ -326,15 +334,29 @@ public class MainActivity extends Activity {
 				makeToast(result);
 			}
 			
-			//The login-related fields and button become visible again
+			blendSignInRelatedViewItems();
+
+		}
+		
+		private void hideSignInRelatedViewItems() {
+			mUsernameTextView.setVisibility(View.INVISIBLE);
+			mPasswordTextView.setVisibility(View.INVISIBLE);
+			mLogInButton = (Button) findViewById(R.id.log_in_button);
+			mLogInButton.setVisibility(View.INVISIBLE);
+			mAttemptLogInProgressBar.setVisibility(View.VISIBLE);
+			mRememberMeCheckBox.setVisibility(View.INVISIBLE);
+			mRememberMeTextView.setVisibility(View.INVISIBLE);
+		}
+		
+		private void blendSignInRelatedViewItems(){
 			mUsernameTextView.setVisibility(View.VISIBLE);
 			mPasswordTextView.setVisibility(View.VISIBLE);
 			mLogInButton.setVisibility(View.VISIBLE);
 			mRememberMeCheckBox.setVisibility(View.VISIBLE);
 			mRememberMeTextView.setVisibility(View.VISIBLE);
 			mAttemptLogInProgressBar.setVisibility(View.GONE);
-
 		}
+		
 
 	}
 
