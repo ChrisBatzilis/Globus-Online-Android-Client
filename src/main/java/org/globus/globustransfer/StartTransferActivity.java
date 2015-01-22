@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class StartTransfer extends BaseActivity {
+public class StartTransferActivity extends BaseActivity {
 
 	private static long sInterval = 900;
 	private static JSONClient sClient;
@@ -142,28 +142,24 @@ public class StartTransfer extends BaseActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 		super.onActivityResult(requestCode, resultCode, data);
-
 		if (newEndpointIsSelected(data)) {
 			if (isInListA(data)) {
 				if (!mSelectedFilesB.isEmpty()) {
 					enableTransferBToA();
 				}
 				fillFileListA(data);
-
 			} else if (isInListB(data)) {
 				if (!mSelectedFilesA.isEmpty()) {
 					enableTransferAtoB();
-
 				}
 				fillFileListB(data);
 			}
-
 		} else if (data.getExtras().containsKey("stop")) {
-
 		}
 	}
 
 	private boolean newEndpointIsSelected(Intent data) {
+
 		return data.getExtras().containsKey("endpoint")
 				&& data.getExtras().containsKey("endId");
 	}
@@ -176,7 +172,6 @@ public class StartTransfer extends BaseActivity {
 	private void enableTransferBToA() {
 
 		mTransferBButton.setBackgroundResource(R.drawable.transfer_up_active);
-
 	}
 
 	private void fillFileListA(Intent data) {
@@ -206,16 +201,8 @@ public class StartTransfer extends BaseActivity {
 		mPathButton.setText(getString(R.string.path_placeholder));
 		new GetEndpointsDirectory("b", data.getStringExtra("endpoint"))
 				.execute();
-
 	}
 
-	/**
-	 * On click listener for List View A. If one file or folder is pressed its
-	 * background color changes to blue if it was white before and it is added
-	 * to the Selected Files list. If it was already on the list its background
-	 * color turns white and it is deleted from the list. If a folder is pressed
-	 * twice in less than 0.9 seconds the path is set to that folder.
-	 */
 	private OnItemClickListener mMessageClickedHandlerA = new OnItemClickListener() {
 
 		public void onItemClick(AdapterView parent, View v, int position,
@@ -233,21 +220,15 @@ public class StartTransfer extends BaseActivity {
 			} else {
 				mTimeDifference = sInterval + 1;
 			}
-
 			if (mTimeDifference <= sInterval && mFilename.endsWith("/")) {
-
 				updateDirectoryA(mFilename);
-
 			} else {
-
 				if (!mSelectedFilesA.contains(mFilename)) {
 					selectFileA(v, mFilename);
-
 				} else {
 					unselectFileA(v, mFilename);
 				}
 			}
-
 			mLastTimePressedA.put(mFilename, mPressTime);
 		}
 
@@ -259,7 +240,6 @@ public class StartTransfer extends BaseActivity {
 			if (mSelectEndpointBButton.getText().toString() != getString(R.string.select_endpoint_prompt))
 				mTransferAButton
 						.setBackgroundResource((R.drawable.transfer_down_active));
-
 		}
 
 		private void unselectFileA(View v, String mFilename) {
@@ -270,7 +250,6 @@ public class StartTransfer extends BaseActivity {
 				mTransferAButton
 						.setBackgroundResource(R.drawable.transfer_down_inactive);
 			}
-
 		}
 
 		private void updateDirectoryA(String mFilename) {
@@ -286,13 +265,6 @@ public class StartTransfer extends BaseActivity {
 		}
 	};
 
-	/**
-	 * On click listener for List View Β. If one file or folder is pressed its
-	 * background color changes to blue if it was white before and it is added
-	 * to the Selected Files list. If it was already on the list its background
-	 * color turns white and it is deleted from the list. If a folder is pressed
-	 * twice in less than 0.9 seconds the path is set to that folder.
-	 */
 	private OnItemClickListener mMessageClickedHandlerB = new OnItemClickListener() {
 
 		public void onItemClick(AdapterView parent, View v, int position,
@@ -303,7 +275,6 @@ public class StartTransfer extends BaseActivity {
 					.findViewById(R.id.file_name_in_list_text_view);
 
 			String mFilename = mFilenameTextView.getText().toString();
-
 			if (mLastTimePressedB.containsKey(mFilename)) {
 				mTimeDifference = mPressTime - mLastTimePressedB.get(mFilename);
 			} else {
@@ -311,18 +282,14 @@ public class StartTransfer extends BaseActivity {
 			}
 			if (mTimeDifference <= sInterval && mFilename.endsWith("/")) {
 				updateDirectoryB(mFilename);
-
 			} else {
 				if (!mSelectedFilesB.contains(mFilename)) {
 					selectFileB(v, mFilename);
-
 				} else {
 					unselectFileB(v, mFilename);
-
 				}
 			}
 			mLastTimePressedB.put(mFilename, mPressTime);
-
 		}
 
 		private void selectFileB(View v, String mFilename) {
@@ -337,60 +304,33 @@ public class StartTransfer extends BaseActivity {
 		}
 
 		private void unselectFileB(View v, String mFilename) {
+
 			v.setBackgroundColor(Color.WHITE);
 			mSelectedFilesB.remove(mFilename);
 			if (mSelectedFilesB.isEmpty()) {
 				mTransferBButton
 						.setBackgroundResource(R.drawable.transfer_up_inactive);
 			}
-
 		}
 
 		private void updateDirectoryB(String mFilename) {
+
 			mEndpointBCurrentPath = mEndpointBCurrentPath.concat(mFilename);
 			new GetEndpointsDirectory("b", mSelectEndpointBButton.getText()
 					.toString()).execute();
-
 		}
 	};
 
-	/**
-	 * Goes up one folder level. If the current path is the root path it
-	 * notifies the user with a Toast that they can not go further up.
-	 * 
-	 * @param view
-	 *            The ListView (representing an endpoint's directory) we want to
-	 *            act on
-	 */
-	public void goBack(View view) {
+	public void goOneFolderUp(View view) {
 
 		int mIdButton = ((Button) view).getId();
 		if (mIdButton == R.id.back_A_button) {
-			attemptGoBack(mSelectEndpointAButton, mEndpointACurrentPath, "a");
+			attemptGoOneFolderUp(mSelectEndpointAButton, mEndpointACurrentPath,
+					"a");
 		} else if (mIdButton == R.id.back_B_button) {
-			attemptGoBack(mSelectEndpointBButton, mEndpointBCurrentPath, "b");
+			attemptGoOneFolderUp(mSelectEndpointBButton, mEndpointBCurrentPath,
+					"b");
 		}
-	}
-
-	/**
-	 * Creates a Deletion Dialog asking from the user for a label for deleting
-	 * the files selected in the corresponding View (endpoint). It gives
-	 * appropriate error messages with Toasts when there is no endpoint selected
-	 * in the View or if no files are selected.If the user clicks on the "OK"
-	 * Button of the Dialog -having typed a valid label or no label at all- it
-	 * calls the execute method of the FileDeletion class.
-	 * 
-	 * @param view
-	 *            The ListView (representing an endpoint's directory) we want to
-	 *            act on
-	 */
-	public void deleteFiles(final View view) {
-
-		if (deletionNotPossible(view)) {
-			return;
-		}
-		initializeDeleteDialog();
-
 	}
 
 	public void setPath(final View view) {
@@ -424,6 +364,14 @@ public class StartTransfer extends BaseActivity {
 			return true;
 		}
 		return false;
+	}
+
+	public void deleteFiles(final View view) {
+
+		if (deletionNotPossible(view)) {
+			return;
+		}
+		initializeDeleteDialog();
 	}
 
 	private boolean deletionNotPossible(View view) {
@@ -511,7 +459,7 @@ public class StartTransfer extends BaseActivity {
 		});
 	}
 
-	private void attemptGoBack(Button selectEndpointButton,
+	private void attemptGoOneFolderUp(Button selectEndpointButton,
 			String endpointCurrentPath, String node) {
 
 		String mNoEndpoint = getString(R.string.select_endpoint_prompt);
@@ -523,7 +471,7 @@ public class StartTransfer extends BaseActivity {
 		} else {
 
 			if (!endpointCurrentPath.contentEquals("/")) {
-				endpointCurrentPath = backPath(endpointCurrentPath);
+				endpointCurrentPath = getParentPath(endpointCurrentPath);
 				if (node.contentEquals("a")) {
 					mEndpointACurrentPath = endpointCurrentPath;
 				} else if (node.contentEquals("b")) {
@@ -539,31 +487,16 @@ public class StartTransfer extends BaseActivity {
 				makeToast(text, Toast.LENGTH_SHORT);
 			}
 		}
-
 	}
 
-	/**
-	 * Creates a folder creation Dialog asking from the user for the name of the
-	 * folder to be created in the corresponding view (endpoint). It gives
-	 * appropriate error messages with Toasts when there in no endpoint selected
-	 * in the view. If the user clicks on the "OK" button of the dialog -having
-	 * typed a valid folder name- it calls the execute method of the
-	 * directoryCreation class.
-	 * 
-	 * @param view
-	 *            The ListView (representing an endpoint's directory) we want to
-	 *            act on
-	 */
 	public void createNewFolder(View view) {
 
 		int mIdButton = ((Button) view).getId();
 		Button selectEndpointButton = null;
 		if (mIdButton == R.id.create_folder_A_button) {
-
 			mNode = "a";
 			selectEndpointButton = mSelectEndpointAButton;
 		} else if (mIdButton == R.id.create_folder_B_button) {
-
 			mNode = "b";
 			selectEndpointButton = mSelectEndpointBButton;
 		}
@@ -571,14 +504,12 @@ public class StartTransfer extends BaseActivity {
 		if (folderCreationNotPossible(selectEndpointButton)) {
 			return;
 		}
-
 		initializeCreateFolderDialog();
-
 	}
 
 	private void initializeCreateFolderDialog() {
-		mCreateFolderDialog = new Dialog(this);
 
+		mCreateFolderDialog = new Dialog(this);
 		mCreateFolderDialog.setCanceledOnTouchOutside(false);
 		mCreateFolderDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		mCreateFolderDialog.setContentView(R.layout.select_folder_name);
@@ -588,9 +519,7 @@ public class StartTransfer extends BaseActivity {
 				.findViewById(R.id.ok_button);
 		mCreateFolderDialog.show();
 
-		mCreateFolderOkButton.setOnClickListener(new OnClickListener()
-
-		{
+		mCreateFolderOkButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
@@ -611,9 +540,7 @@ public class StartTransfer extends BaseActivity {
 					new DirectoryCreation(mNode, mFolderName).execute();
 				}
 			}
-
 		});
-
 	}
 
 	private boolean folderCreationNotPossible(Button selectEndpointButton) {
@@ -623,7 +550,6 @@ public class StartTransfer extends BaseActivity {
 					Toast.LENGTH_SHORT);
 			return true;
 		}
-
 		if (!isInternetConnectionAvailable()) {
 			makeToast(getString(R.string.offline_warning), Toast.LENGTH_SHORT);
 			return true;
@@ -634,67 +560,56 @@ public class StartTransfer extends BaseActivity {
 	/**
 	 * It initiates with an Intent the Endpoint Activity, waiting to get back a
 	 * result with the name of the Enpoint selected by the user.
-	 * 
-	 * @param view
-	 *            The Endpoint Selection Button that was clicked
 	 */
 	public void startEndpointList(View view) {
-		String mEndpoint = null;
 
+		String mEndpoint = null;
 		if (view.getId() == mSelectEndpointAButton.getId())
 			mEndpoint = "a";
 		else if (view.getId() == mSelectEndpointBButton.getId())
 			mEndpoint = "b";
-
 		Intent mIntent = getEndpointsListIntent(mEndpoint);
 		goToEndpointsList(mIntent);
-
 	}
 
 	private Intent getEndpointsListIntent(String endpoint) {
+
 		Intent intent = new Intent(mContext, EndpointActivity.class);
 		intent.putStringArrayListExtra("endpointslist", mEndpoints);
 		intent.putExtra("endId", endpoint);
 		return intent;
-
 	}
 
 	private void goToEndpointsList(Intent intent) {
-		try {
 
+		try {
 			startActivityForResult(intent, 1);
 		} catch (Exception e) {
 			makeToast(e.getMessage());
 		}
-
 	}
 
 	/**
 	 * Returns the path of the folder being one level up from the current
 	 * folder.
-	 * 
-	 * @param path
-	 *            The current path
-	 * @return The path of the folder one level up
 	 */
-	public String backPath(String path) {
+	public String getParentPath(String currentPath) {
+
 		String mDelims = "/";
-		String[] mTokens = path.split(mDelims);
-		String mResult = "/";
+		String[] mTokens = currentPath.split(mDelims);
+		String mParentPath = "/";
 		int mTemp;
-		if (path.endsWith("/"))
+		if (currentPath.endsWith("/"))
 			mTemp = 1;
 		else
 			mTemp = 2;
 		for (int i = 0; i < mTokens.length; i++) {
 
 			if (i > 0 && i < (mTokens.length - mTemp)) {
-				mResult = mResult.concat(mTokens[i] + "/");
+				mParentPath = mParentPath.concat(mTokens[i] + "/");
 			}
 		}
-
-		return mResult;
-
+		return mParentPath;
 	}
 
 	/**
@@ -705,24 +620,23 @@ public class StartTransfer extends BaseActivity {
 	 *            act on
 	 */
 	public void refresh(View view) {
+
 		if (!isInternetConnectionAvailable()) {
 			makeToast(getString(R.string.offline_warning), Toast.LENGTH_SHORT);
 			return;
 		}
 		if (view.getId() == R.id.refresh_A_button) {
-
 			refreshDirectory(mSelectEndpointAButton, mAListView,
 					mEndpointAProgressBar, "a");
 		} else if (view.getId() == R.id.refresh_B_button) {
-
 			refreshDirectory(mSelectEndpointBButton, mBListView,
 					mEndpointBProgressBar, "b");
 		}
-
 	}
 
 	private void refreshDirectory(Button selectEndpointButton,
 			ListView listView, ProgressBar endpointProgressBar, String node) {
+
 		if (!selectEndpointButton.getText().toString()
 				.contentEquals(getString(R.string.select_endpoint_prompt))) {
 			listView.setAdapter(null);
@@ -734,37 +648,23 @@ public class StartTransfer extends BaseActivity {
 			makeToast(getString(R.string.no_endpoint_selected_warning),
 					Toast.LENGTH_SHORT);
 		}
-
 	}
 
-	/**
-	 * Creates a dialog asking from the user to type a label for the transfer to
-	 * be initiated. If the source or the destination Endpoints have not been
-	 * selected, or if the are no files selected in the source Endpoint
-	 * directory List View, it warns the user with Toasts containing the
-	 * corresponding warning messages. If the the user types a valid label or no
-	 * label at all and clicks the "OK" button in the dialog, the execute method
-	 * of the fileTransfer class is called.
-	 * 
-	 * @param view
-	 *            The Transfer Button clicked
-	 */
 	public void makeTransfer(View view) {
 
 		if (transferNotPossible(view)) {
 			return;
 		}
 		initializeMakeTransferDialog();
-
 	}
 
 	private boolean transferNotPossible(View view) {
+
 		int mIdButton = ((Button) view).getId();
 		String mNoEndpoint = getString(R.string.select_endpoint_prompt);
 
 		if (mSelectEndpointBButton.getText() == mNoEndpoint
 				|| mSelectEndpointAButton.getText() == mNoEndpoint) {
-
 			return true;
 		}
 		if (!isInternetConnectionAvailable()) {
@@ -774,13 +674,11 @@ public class StartTransfer extends BaseActivity {
 		if (mIdButton == R.id.transfer_A_to_B_button) {
 			mNode = "a";
 			if (mSelectedFilesA.isEmpty()) {
-
 				return true;
 			}
 		} else if (mIdButton == R.id.transfer_B_to_A_button) {
 			mNode = "b";
 			if (mSelectedFilesB.isEmpty()) {
-
 				return true;
 			}
 		}
@@ -798,9 +696,7 @@ public class StartTransfer extends BaseActivity {
 		mMakeTransferOkButton = (Button) mMakeTransferDialog
 				.findViewById(R.id.ok_button);
 		mMakeTransferDialog.show();
-		mMakeTransferOkButton.setOnClickListener(new OnClickListener()
-
-		{
+		mMakeTransferOkButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
@@ -820,9 +716,7 @@ public class StartTransfer extends BaseActivity {
 					new FilesTransfer(mNode, mTransferName).execute();
 				}
 			}
-
 		});
-
 	}
 
 	/**
@@ -835,8 +729,6 @@ public class StartTransfer extends BaseActivity {
 	 * or white, depending on whether the specific file or folder is selected by
 	 * the user or not.
 	 * 
-	 * @author christos
-	 * 
 	 */
 	public class CustomAdapter extends ArrayAdapter<String> {
 
@@ -846,7 +738,6 @@ public class StartTransfer extends BaseActivity {
 				List<String> objects) {
 			super(context, textViewResourceId, objects);
 			this.mLocalContext = context;
-
 		}
 
 		@Override
@@ -908,25 +799,13 @@ public class StartTransfer extends BaseActivity {
 					mRow.setBackgroundColor(Color.WHITE);
 
 				}
-
 			}
-
 			// The file's name text view is set
 			mFilenameTextView.setText(mFile);
 			return mRow;
 		}
-
 	}
 
-	/**
-	 * This class attempts to create a new directory by POSTing a JSON object
-	 * containing the new folder's name to endpoint/<canonical_name>/mkdir. It
-	 * informs the user with a Toast for the request's result, and if it's
-	 * successful it refreshes the corresponding endpoint's directory.
-	 * 
-	 * @author christos
-	 * 
-	 */
 	public class DirectoryCreation extends AsyncTask<String, Void, String> {
 
 		String mLocalNode, mLocalfolderName;
@@ -934,7 +813,6 @@ public class StartTransfer extends BaseActivity {
 		public DirectoryCreation(String node, String folderName) {
 			this.mLocalNode = node;
 			this.mLocalfolderName = folderName;
-
 		}
 
 		@Override
@@ -943,15 +821,12 @@ public class StartTransfer extends BaseActivity {
 			String mEndpoint = "";
 
 			if (mLocalNode.contentEquals("a")) {
-
 				mTargetPath = mEndpointACurrentPath;
 				mEndpoint = mSelectEndpointAButton.getText().toString();
 			} else if (mLocalNode.contentEquals("b")) {
-
 				mTargetPath = mEndpointBCurrentPath;
 				mEndpoint = mSelectEndpointBButton.getText().toString();
 			}
-
 			return createFolder(mTargetPath, mEndpoint);
 		}
 
@@ -961,7 +836,6 @@ public class StartTransfer extends BaseActivity {
 			super.onPostExecute(result);
 
 			makeToast(result, Toast.LENGTH_LONG);
-
 			if (result.contentEquals("The directory was created successfully")) {
 				if (mLocalNode.contentEquals("a")) {
 					mAListView.setAdapter(null);
@@ -977,16 +851,14 @@ public class StartTransfer extends BaseActivity {
 					new GetEndpointsDirectory(mLocalNode,
 							mSelectEndpointBButton.getText().toString())
 							.execute();
-
 				}
-
 			}
-
 		}
 
 		private String attemptToCreateFolder(String mTargetPath,
 				String mEndpoint) throws JSONException, MalformedURLException,
 				IOException, GeneralSecurityException, APIError {
+
 			String mResult = getString(R.string.error);
 			String mDelims = "#";
 			String[] tokens = mEndpoint.split(mDelims);
@@ -994,24 +866,20 @@ public class StartTransfer extends BaseActivity {
 			JSONObject mSubmit = new JSONObject();
 			mSubmit.put("path", mTargetPath + mLocalfolderName);
 			mSubmit.put("DATA_TYPE", "mkdir");
-
 			mQueryResult = sClient.postResult("/endpoint/" + tokens[0] + "%23"
 					+ tokens[1] + "/mkdir", mSubmit);
 			JSONObject mJsonObject = mQueryResult.document;
-
 			if (!mJsonObject.getString("DATA_TYPE").equals("mkdir_result")) {
 				return mResult;
 			}
-
 			mResult = mJsonObject.getString("message");
 			return mResult;
-
 		}
 
 		private String createFolder(String mTargetPath, String mEndpoint) {
 			String mResult;
-			try {
 
+			try {
 				mResult = attemptToCreateFolder(mTargetPath, mEndpoint);
 			} catch (IOException e) {
 				mResult = getString(R.string.offline_warning);
@@ -1023,22 +891,9 @@ public class StartTransfer extends BaseActivity {
 				mResult = e.statusMessage;
 			}
 			return mResult;
-
 		}
-
 	}
 
-	/**
-	 * This class tries to delete the files selected by the user. It first gets
-	 * a submission id by sending GET /submission_id. Once the submission id is
-	 * acquired, it POSTs a JSON Object to /delete, containing the submission
-	 * id, the deletion task's name, the endpoint's name, an JSONArray
-	 * containing the paths of the files/folders that are to be deleted and a
-	 * flag indicating whether there should be recursive file deletion or not.
-	 * It informs the user for the request's result with a Toast.
-	 * 
-	 * @author christos
-	 */
 	public class FileDeletion extends AsyncTask<String, Void, List<String>> {
 
 		String mLocalNode;
@@ -1066,7 +921,6 @@ public class StartTransfer extends BaseActivity {
 			List<String> mMessage = new ArrayList<String>();
 
 			try {
-
 				mMessage = attemptDeleteFile();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -1078,12 +932,12 @@ public class StartTransfer extends BaseActivity {
 				e.printStackTrace();
 				mMessage.add(e.statusMessage);
 			}
-
 			return mMessage;
 		}
 
 		private List<String> attemptDeleteFile() throws MalformedURLException,
 				IOException, GeneralSecurityException, JSONException, APIError {
+
 			String mId;
 			List<String> mMessage = new ArrayList<String>();
 			boolean mContainsFolders = false;
@@ -1144,12 +998,11 @@ public class StartTransfer extends BaseActivity {
 		}
 
 		private String getEndpoint() {
+
 			String mEndpoint = null;
 			if (mLocalNode.contentEquals("a")) {
-
 				mEndpoint = mSelectEndpointAButton.getText().toString();
 			} else if (mLocalNode.contentEquals("b")) {
-
 				mEndpoint = mSelectEndpointBButton.getText().toString();
 			}
 			return mEndpoint;
@@ -1157,6 +1010,7 @@ public class StartTransfer extends BaseActivity {
 
 		private JSONArray getJSONArray(List<String> mTargetPath)
 				throws JSONException {
+
 			JSONArray mJArray = new JSONArray();
 			for (int i = 0; i < mTargetPath.size(); i++) {
 				JSONObject mTemp = new JSONObject();
@@ -1170,15 +1024,14 @@ public class StartTransfer extends BaseActivity {
 		private JSONObject getJSONObject(String mId, String mEndpoint,
 				boolean mContainsFolders, JSONArray mJArray)
 				throws JSONException {
+
 			JSONObject mSubmit = new JSONObject();
 			mSubmit.put("submission_id", mId);
 			mSubmit.put("endpoint", mEndpoint);
 			mSubmit.put("recursive", mContainsFolders);
-
 			if (!mLocalDeletionName.matches("[ ]*")) {
 				mSubmit.put("label", mLocalDeletionName);
 			}
-
 			mSubmit.put("DATA_TYPE", "delete");
 			mSubmit.put("ingore_missing", false);
 			mSubmit.put("DATA", mJArray);
@@ -1197,24 +1050,8 @@ public class StartTransfer extends BaseActivity {
 			mMessage.add(mJsonObject2.getString("code"));
 			return mMessage;
 		}
-
 	}
 
-	/**
-	 * This class attempts to get the contents of a specific endpoint's
-	 * directory by sending a GET request to endpoint/<canonical_name>/ls along
-	 * with request parameters containing the path we want to access. It makes
-	 * the corresponding ListView invisible and puts a progress bar on its place
-	 * while communicating with the Server. If it gets the directory's contents
-	 * successfully it presents them through the corresponding List View.
-	 * Otherwise it informs the user for any error that may have occurred, and
-	 * if the case is that the Endpoint is not activated, it calls the execute
-	 * function of the AutoActivate class.
-	 * 
-	 * 
-	 * @author christos
-	 * 
-	 */
 	public class GetEndpointsDirectory extends
 			AsyncTask<String, Void, ArrayList<String>> {
 
@@ -1232,15 +1069,14 @@ public class StartTransfer extends BaseActivity {
 			super.onPreExecute();
 
 			if (mLocalNode.contentEquals("a")) {
-
 				prepareAForRefresh();
 			} else if (mLocalNode.contentEquals("b")) {
-
 				prepareBForRefresh();
 			}
 		}
 
 		private void prepareAForRefresh() {
+
 			mAListView.setAdapter(null);
 			mTransferAButton
 					.setBackgroundResource(R.drawable.transfer_down_inactive);
@@ -1253,6 +1089,7 @@ public class StartTransfer extends BaseActivity {
 		}
 
 		private void prepareBForRefresh() {
+
 			mBListView.setAdapter(null);
 			mTransferBButton
 					.setBackgroundResource(R.drawable.transfer_up_inactive);
@@ -1261,7 +1098,6 @@ public class StartTransfer extends BaseActivity {
 			mEndpointBProgressBar.setVisibility(View.VISIBLE);
 			mLastTimePressedB.clear();
 			mFilesSizeB.clear();
-
 		}
 
 		@Override
@@ -1269,33 +1105,26 @@ public class StartTransfer extends BaseActivity {
 
 			ArrayList<String> mDirectoryList = new ArrayList<String>();
 			Map<String, String> mRequestParams = new HashMap<String, String>();
-
 			getCurrentPath(mRequestParams);
 			getShowHiddenFiles(mRequestParams);
 			return getEndpointsDirectory(mRequestParams, mDirectoryList);
-
 		}
 
 		@Override
 		protected void onPostExecute(ArrayList<String> result) {
 
 			super.onPostExecute(result);
-
 			ArrayAdapter adapter = new CustomAdapter(mContext,
 					android.R.layout.simple_list_item_1, result);
 			String mCode = "";
 			if (result.size() > 0) {
 				mCode = result.get(0);
 			}
-
 			if (mLocalNode.contentEquals("a")) {
-
 				if (!mCode.contentEquals("Error")) {
 					mAListView.setAdapter(adapter);
 					mFileListA = result;
-
 				} else {
-
 					mActivateNode = "a";
 					try {
 						makeToast(result.get(1), Toast.LENGTH_LONG);
@@ -1308,7 +1137,6 @@ public class StartTransfer extends BaseActivity {
 						makeToast(ex.getMessage());
 					}
 				}
-
 				mAListView.setVisibility(View.VISIBLE);
 				mEndpointAProgressBar.setVisibility(View.GONE);
 				mSelectedFilesA.clear();
@@ -1331,9 +1159,7 @@ public class StartTransfer extends BaseActivity {
 				mBListView.setVisibility(View.VISIBLE);
 				mEndpointBProgressBar.setVisibility(View.GONE);
 				mSelectedFilesB.clear();
-
 			}
-
 		}
 
 		private void getCurrentPath(Map<String, String> mRequestParams) {
@@ -1342,7 +1168,6 @@ public class StartTransfer extends BaseActivity {
 			} else if (mLocalNode.contentEquals("b")) {
 				mRequestParams.put("path", mEndpointBCurrentPath);
 			}
-
 		}
 
 		private void getShowHiddenFiles(Map<String, String> mRequestParams) {
@@ -1355,8 +1180,8 @@ public class StartTransfer extends BaseActivity {
 		private ArrayList<String> getEndpointsDirectory(
 				Map<String, String> mRequestParams,
 				ArrayList<String> mDirectoryList) {
-			try {
 
+			try {
 				return attemptGetEndpointsDirectory(mRequestParams,
 						mDirectoryList);
 			} catch (IOException e) {
@@ -1380,6 +1205,7 @@ public class StartTransfer extends BaseActivity {
 				Map<String, String> mRequestParams,
 				ArrayList<String> mDirectoryList) throws MalformedURLException,
 				IOException, GeneralSecurityException, JSONException, APIError {
+
 			String mDelims = "#";
 			String[] mTokens = mLocalEndpoint.split(mDelims);
 			Result mQueryResult;
@@ -1401,18 +1227,16 @@ public class StartTransfer extends BaseActivity {
 		private ArrayList<String> getDirectoryList(JSONArray mJsonArray)
 				throws JSONException {
 			JSONObject mJsonObject;
-			ArrayList<String> mDirectoryList = new ArrayList<String>();
 
+			ArrayList<String> mDirectoryList = new ArrayList<String>();
 			for (int i = 0; i < mJsonArray.length(); i++) {
 				mJsonObject = mJsonArray.getJSONObject(i);
 				String mLocalEndpoint;
 				Float mSize;
 
 				if (mJsonObject.getString("type").contentEquals("dir")) {
-
 					mLocalEndpoint = mJsonObject.getString("name") + "/";
 				} else {
-
 					mLocalEndpoint = mJsonObject.getString("name");
 					mSize = Float.parseFloat(mJsonObject.getString("size"));
 					if (mLocalNode.contentEquals("a")) {
@@ -1425,19 +1249,8 @@ public class StartTransfer extends BaseActivity {
 			}
 			return mDirectoryList;
 		}
-
 	}
 
-	/**
-	 * 
-	 * 
-	 * This class attempts to get the list of all the endpoints visible to the
-	 * user by sending a GET request to endpoint_list. It hides all the view
-	 * from the screen while communicating with the server and instead shows a
-	 * progress bar.
-	 * 
-	 * @author christos
-	 */
 	public class GetEndpointsList extends
 			AsyncTask<String, Void, ArrayList<String>> {
 
@@ -1456,15 +1269,10 @@ public class StartTransfer extends BaseActivity {
 		protected ArrayList<String> doInBackground(String... arg0) {
 
 			List<String> mEndpoints = new ArrayList<String>();
-
 			Map<String, String> mRequestParams = getRequestParameters();
-
 			mEndpointLoadProgressBar.setProgress(1);
-
 			mEndpoints = getEndpointList(mRequestParams);
-
 			mEndpointLoadProgressBar.setProgress(4);
-
 			return (ArrayList<String>) mEndpoints;
 		}
 
@@ -1489,21 +1297,20 @@ public class StartTransfer extends BaseActivity {
 		}
 
 		private Map<String, String> getRequestParameters() {
+
 			Map<String, String> mRequestParams = new HashMap<String, String>();
 			mRequestParams.put("limit", "0");
 			mRequestParams.put("fields", "canonical_name");
-
 			if (mSharedPreferences.getBoolean("EndpointsActiveOnly", true)) {
 				mRequestParams.put("filter", "activated:true");
 			}
-
 			return mRequestParams;
 		}
 
 		private ArrayList<String> getEndpointList(
 				Map<String, String> mRequestParams) {
-			try {
 
+			try {
 				mEndpoints = attemptGetEndpointsList(mRequestParams);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -1526,6 +1333,7 @@ public class StartTransfer extends BaseActivity {
 				Map<String, String> mRequestParams) throws JSONException,
 				MalformedURLException, IOException, GeneralSecurityException,
 				APIError {
+
 			Result mQueryResult = sClient.getResult("/endpoint_list",
 					mRequestParams);
 			mEndpointLoadProgressBar.setProgress(2);
@@ -1536,24 +1344,19 @@ public class StartTransfer extends BaseActivity {
 				mEndpoints.add(getString(R.string.error));
 				return (ArrayList<String>) mEndpoints;
 			}
-
 			JSONArray mJsonArray = mJsonObject.getJSONArray("DATA");
-
 			mEndpointLoadProgressBar.setProgress(3);
-
 			for (int i = 0; i < mJsonArray.length(); i++) {
 
 				String endpoint = mJsonArray.getJSONObject(i).getString(
 						"canonical_name");
 				mEndpoints.add(endpoint);
-
 			}
-
 			return mEndpoints;
-
 		}
 
 		private void hideRelatedViews() {
+
 			makeInvisible(mSelectEndpointAButton, mSelectEndpointBButton,
 					mAListView, mBListView, mATextView, mBTextView, mUpAButton,
 					mUpBButton, mCreateAButton, mCreateBButton, mDeleteAButton,
@@ -1563,6 +1366,7 @@ public class StartTransfer extends BaseActivity {
 		}
 
 		private void blendRelatedViews() {
+
 			makeVisible(mSelectEndpointAButton, mSelectEndpointBButton,
 					mAListView, mBListView, mATextView, mBTextView, mUpAButton,
 					mUpBButton, mCreateAButton, mCreateBButton, mDeleteAButton,
@@ -1573,21 +1377,6 @@ public class StartTransfer extends BaseActivity {
 
 	}
 
-	/**
-	 * This class attempts to transfer the files selected by the user from the
-	 * one Endpoint to the other. It first gets a submission id by sending GET
-	 * /submission_id. Once the submission id is acquired, it POSTs a JSON
-	 * Object to /transfer, containing the submission id, the transfer task's
-	 * name(if any), the source endpoint's name, the destination endpoint's name
-	 * and a JSONArray containing the paths of the files/folders that are to be
-	 * transfered along with the paths that they are bound to be transferred to.
-	 * It informs the user for the request's result with a Toast.
-	 * 
-	 * 
-	 * 
-	 * @author christos
-	 * 
-	 */
 	public class FilesTransfer extends AsyncTask<String, Void, List<String>> {
 
 		String mLocalNode;
@@ -1601,6 +1390,7 @@ public class StartTransfer extends BaseActivity {
 		JSONObject mSubmit;
 
 		public FilesTransfer(String node, String transferName) {
+
 			this.mLocalNode = node;
 			this.mLocaltransferName = transferName;
 			mPaths = new HashMap<String, String>();
@@ -1625,6 +1415,7 @@ public class StartTransfer extends BaseActivity {
 		}
 
 		private List<String> transferFiles() {
+
 			List<String> mMessage = new ArrayList<String>();
 			try {
 				mMessage = attemptTranferFiles();
@@ -1648,7 +1439,6 @@ public class StartTransfer extends BaseActivity {
 			if (!getSubmissionId()) {
 				return mMessage;
 			}
-
 			getFilesToBeTransferred();
 			getEndpoints();
 			getJSONArray();
@@ -1659,15 +1449,14 @@ public class StartTransfer extends BaseActivity {
 		}
 
 		private void getFilesToBeTransferred() {
+
 			if (mLocalNode.contentEquals("a")) {
 				for (int i = 0; i < mSelectedFilesA.size(); i++) {
 
 					mPaths.put(mEndpointACurrentPath.concat(mSelectedFilesA
 							.get(i)), mEndpointBCurrentPath
 							.concat(mSelectedFilesA.get(i)));
-
 				}
-
 			} else if (mLocalNode.contentEquals("b")) {
 				for (int i = 0; i < mSelectedFilesB.size(); i++) {
 
@@ -1676,7 +1465,6 @@ public class StartTransfer extends BaseActivity {
 							.concat(mSelectedFilesB.get(i)));
 				}
 			}
-
 		}
 
 		private void getEndpoints() {
@@ -1686,13 +1474,10 @@ public class StartTransfer extends BaseActivity {
 				mSourceEndpoint = mSelectEndpointAButton.getText().toString();
 				mDestinationEndpoint = mSelectEndpointBButton.getText()
 						.toString();
-
 			} else if (mLocalNode.contentEquals("b")) {
-
 				mSourceEndpoint = mSelectEndpointBButton.getText().toString();
 				mDestinationEndpoint = mSelectEndpointAButton.getText()
 						.toString();
-
 			}
 		}
 
@@ -1711,7 +1496,6 @@ public class StartTransfer extends BaseActivity {
 					temp.put("recursice", false);
 				mJSONArray.put(temp);
 			}
-
 		}
 
 		private void getJSONObject() throws JSONException {
@@ -1720,21 +1504,17 @@ public class StartTransfer extends BaseActivity {
 			mSubmit.put("source_endpoint", mSourceEndpoint);
 			mSubmit.put("destination_endpoint", mDestinationEndpoint);
 			mSubmit.put("DATA_TYPE", "transfer");
-
 			if (!mLocaltransferName.matches("[ ]*")) {
 				mSubmit.put("label", mLocaltransferName);
 			}
-
 			mSubmit.put("DATA", mJSONArray);
-
 		}
 
 		private boolean getSubmissionId() throws MalformedURLException,
 				IOException, GeneralSecurityException, JSONException, APIError {
+
 			Result mQueryResult = sClient.getResult("/submission_id");
-
 			JSONObject mJsonObject = mQueryResult.document;
-
 			if (!mJsonObject.getString("DATA_TYPE").equals("submission_id")) {
 				mMessage.add(getString(R.string.error));
 				return false;
@@ -1752,21 +1532,8 @@ public class StartTransfer extends BaseActivity {
 			mMessage.add(jsonObject.getString("message"));
 			mMessage.add(jsonObject.getString("code"));
 		}
-
 	}
 
-	/**
-	 * This class attempts to autoactivate an Endpoint, in case it is not
-	 * activated, by POSTing and empty JSON Object to
-	 * endpoint/<canonical_name>/autoactivate. In case the Endpoint can not be
-	 * auto activated, it creates a dialog prompting the user to enter the
-	 * credentials needed for the Endpoint to be activated. If the user types
-	 * the necessary credentials and clicks the "Activate" button, the execution
-	 * function of the Activate class is called.
-	 * 
-	 * @author christos
-	 * 
-	 */
 	public class AutoActivate extends
 			AsyncTask<JSONObject, Void, ArrayList<String>> {
 
@@ -1783,7 +1550,6 @@ public class StartTransfer extends BaseActivity {
 		protected ArrayList<String> doInBackground(JSONObject... args) {
 
 			List<String> mResult = new ArrayList<String>();
-
 			try {
 
 				mResult = autoActivate(args[0]);
@@ -1800,7 +1566,6 @@ public class StartTransfer extends BaseActivity {
 				mResult.add(getString(R.string.error));
 				mResult.add(e.statusMessage);
 			}
-
 			return (ArrayList<String>) mResult;
 		}
 
@@ -1822,7 +1587,6 @@ public class StartTransfer extends BaseActivity {
 				mResult.add(getString(R.string.error));
 				return mResult;
 			}
-
 			mResult.add(mJsonObject.getString("code"));
 			mResult.add(mJsonObject.getString("message"));
 
@@ -1830,7 +1594,6 @@ public class StartTransfer extends BaseActivity {
 				mActivationRequirements = mJsonObject;
 			}
 			return mResult;
-
 		}
 
 		@Override
@@ -1845,15 +1608,16 @@ public class StartTransfer extends BaseActivity {
 			} else {
 				createActivationDialog();
 			}
-
 		}
 
 		private void loadEndpointsDirectory(String message) {
+
 			new GetEndpointsDirectory(mLocalNode, mEndpoint).execute();
 			makeToast(message, Toast.LENGTH_LONG);
 		}
 
 		private void createActivationDialog() {
+	
 			String title = "";
 			final JSONArray mJSONArray;
 			mActivateDialog = new Dialog(mContext);
@@ -2018,20 +1782,9 @@ public class StartTransfer extends BaseActivity {
 
 				e.printStackTrace();
 			}
-
 		}
-
 	}
 
-	/**
-	 * This class attempts to activate an endpoint by POSTing a JSON Object
-	 * containing the Credentials Required as they were filled by the user to
-	 * endpoint/<canonical_name>/activate. It informs the user of the result
-	 * with a Toast message.
-	 * 
-	 * @author christos
-	 * 
-	 */
 	public class Activate extends
 			AsyncTask<JSONObject, Void, ArrayList<String>> {
 
@@ -2041,7 +1794,6 @@ public class StartTransfer extends BaseActivity {
 		public Activate(String node, String endpoint) {
 			this.mLocalNode = node;
 			this.mEndpoint = endpoint;
-
 		}
 
 		@Override
@@ -2051,8 +1803,8 @@ public class StartTransfer extends BaseActivity {
 		}
 
 		private List<String> activate(JSONObject requirments) {
+	
 			List<String> mResult = new ArrayList<>();
-
 			try {
 				mResult = attemptActivate(requirments);
 			} catch (GeneralSecurityException | JSONException e) {
@@ -2075,14 +1827,12 @@ public class StartTransfer extends BaseActivity {
 		private List<String> attemptActivate(JSONObject requirments)
 				throws MalformedURLException, IOException,
 				GeneralSecurityException, JSONException, APIError {
+
 			List<String> mResult = new ArrayList<>();
 			String mDelims = "#";
 			String[] mTokens = mEndpoint.split(mDelims);
-
 			Result mQueryResult;
-
 			JSONObject mRequirementsJsonObject = requirments;
-
 			mQueryResult = sClient.postResult("/endpoint/" + mTokens[0] + "%23"
 					+ mTokens[1] + "/activate", mRequirementsJsonObject);
 			JSONObject mJsonObject = mQueryResult.document;
@@ -2122,13 +1872,8 @@ public class StartTransfer extends BaseActivity {
 		if (mMakeTransferDialog != null) {
 			mMakeTransferDialog.dismiss();
 		}
-
 	}
 
-	/**
-	 * Android build-in function that we override in order to save data when the
-	 * activity is temporarily destroyed
-	 */
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -2195,6 +1940,7 @@ public class StartTransfer extends BaseActivity {
 	}
 
 	private void initializeVariables() {
+		
 		mActivationRequirements = null;
 		mEndpoints = new ArrayList<String>();
 		mLastTimePressedA = new HashMap<String, Long>();
@@ -2241,6 +1987,7 @@ public class StartTransfer extends BaseActivity {
 	}
 
 	private void setListenerForEndpointsVisibleButton() {
+
 		mEndpointsVisibleToggleButton
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
@@ -2260,6 +2007,7 @@ public class StartTransfer extends BaseActivity {
 	}
 
 	private void setListenerForHiddenBUtton() {
+
 		mHiddenToggleButton
 				.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
@@ -2303,16 +2051,13 @@ public class StartTransfer extends BaseActivity {
 						new GetEndpointsDirectory("b", mSelectEndpointBButton
 								.getText().toString()).execute();
 					}
-
 				}
-
 			}
-
 		});
-
 	}
 
 	private void initializeSetPathDialog(final String node) {
+
 		final Dialog mSetPathDialog = new Dialog(this);
 		mSetPathDialog.setCanceledOnTouchOutside(false);
 		mSetPathDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -2320,30 +2065,25 @@ public class StartTransfer extends BaseActivity {
 		final EditText mPathEditText = (EditText) mSetPathDialog
 				.findViewById(R.id.path_name_edit_text);
 		Button mOkButton = (Button) mSetPathDialog.findViewById(R.id.ok_button);
-
 		mSetPathDialog.show();
-
 		mOkButton.setOnClickListener(new OnClickListener()
-
 		{
 
 			@Override
 			public void onClick(View arg0) {
-				
+
 				String endpoint;
 				if (node.contentEquals("a")) {
 					endpoint = mSelectEndpointAButton.getText().toString();
-					mEndpointACurrentPath=mPathEditText.getText().toString();
+					mEndpointACurrentPath = mPathEditText.getText().toString();
 				} else {
 					endpoint = mSelectEndpointBButton.getText().toString();
-					mEndpointBCurrentPath=mPathEditText.getText().toString();
+					mEndpointBCurrentPath = mPathEditText.getText().toString();
 				}
 				new GetEndpointsDirectory(node, endpoint).execute();
 				mSetPathDialog.dismiss();
 			}
-
 		});
-
 	}
 
 	private void initializeView() {
@@ -2371,24 +2111,13 @@ public class StartTransfer extends BaseActivity {
 		mDeleteBButton = (Button) findViewById(R.id.delete_B_button);
 	}
 
-	protected void createJsonClient() {
-		try {
-
-			sClient = new JSONClient(mUsername, mAuthToken);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
 	private void retrieveData(Bundle savedInstanceState) {
-		if (savedInstanceState != null) {
 
+		if (savedInstanceState != null) {
 			reloadData(savedInstanceState);
 		} else {
 			new GetEndpointsList().execute();
 		}
-
 	}
 
 	private void reloadData(Bundle savedInstanceState) {
@@ -2417,6 +2146,7 @@ public class StartTransfer extends BaseActivity {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void reloadFilesLists(Bundle savedInstanceState) {
+
 		mSelectedFilesA = savedInstanceState
 				.getStringArrayList("selected_files_a");
 		mSelectedFilesB = savedInstanceState
@@ -2426,7 +2156,6 @@ public class StartTransfer extends BaseActivity {
 
 		mFilesSizeA = (Map<String, Float>) savedInstanceState
 				.getSerializable("filesizeA");
-
 		if (!mFileListA.isEmpty()) {
 			ArrayAdapter mAdapterA = new CustomAdapter(mContext,
 					android.R.layout.simple_list_item_1, mFileListA);
@@ -2445,7 +2174,6 @@ public class StartTransfer extends BaseActivity {
 
 			mBListView.setAdapter(mAdapterB);
 		}
-
 	}
 
 	private void reloadTransferButtons(Bundle savedInstanceState) {
@@ -2463,6 +2191,7 @@ public class StartTransfer extends BaseActivity {
 	}
 
 	private void reloadSettings(Bundle savedInstanceState) {
+
 		if (savedInstanceState.getBoolean("Settings")) {
 			mEndpointsTemp = savedInstanceState.getBoolean("endpointsTemp");
 			mHiddenTemp = savedInstanceState.getBoolean("hiddenTemp");
@@ -2496,6 +2225,7 @@ public class StartTransfer extends BaseActivity {
 	}
 
 	private void reactivateNode(Bundle savedInstanceState) {
+
 		if (savedInstanceState.getBoolean("activating")) {
 
 			mActivateNode = savedInstanceState.getString("node");
@@ -2518,5 +2248,4 @@ public class StartTransfer extends BaseActivity {
 					.getString("transferName"));
 		}
 	}
-
 }

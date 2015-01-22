@@ -83,6 +83,7 @@ public class MonitorActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_monitor);
 		mSharedPreferences = getSharedPreferences(
@@ -95,7 +96,6 @@ public class MonitorActivity extends BaseActivity {
 		createSettinsMenuListeners();
 		createJsonClient();
 		retrieveTasksList(savedInstanceState);
-
 	}
 
 	@Override
@@ -110,15 +110,14 @@ public class MonitorActivity extends BaseActivity {
 
 		switch (item.getItemId()) {
 		case R.id.monitor_settings:
-
 			retrieveSavedSettings();
 		default:
-
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
 	private void retrieveSavedSettings() {
+
 		mTempActive = mSharedPreferences.getBoolean("active", true);
 		mTempInactive = mSharedPreferences.getBoolean("inactive", true);
 		mTempSucceeded = mSharedPreferences.getBoolean("succeeded", true);
@@ -127,19 +126,11 @@ public class MonitorActivity extends BaseActivity {
 				"10");
 		mTempTransfersAndDeletions = mSharedPreferences.getBoolean(
 				"deletionsAndTransfers", true);
-
 		mSettingsDialog.show();
-
 	}
 
-	/**
-	 * It refreshes the contents of the Tasks List by calling the execute
-	 * function of the getTasksList class
-	 * 
-	 * @param view
-	 *            The current View
-	 */
 	public void refresh(View view) {
+
 		if (isInternetConnectionAvailable()) {
 			new GetTasksList().execute();
 		} else {
@@ -159,15 +150,12 @@ public class MonitorActivity extends BaseActivity {
 		mUpdateLabelOkButton = (Button) mUpdateLabelDialog
 				.findViewById(R.id.ok_button);
 		mUpdateLabelDialog.show();
-		mUpdateLabelOkButton.setOnClickListener(new OnClickListener()
-
-		{
+		mUpdateLabelOkButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 
 				mNewLabelName = mUpdateLabelEditText.getText().toString();
-
 				if (!mNewLabelName.matches("[A-Z[a-z][0-9][ ]]+")
 						|| mNewLabelName.matches("[ ]*")) {
 					makeToast(getString(R.string.invalid_name_warning));
@@ -178,31 +166,22 @@ public class MonitorActivity extends BaseActivity {
 						new UpdateLabel(m_Task).execute(mNewLabelName);
 					} else {
 						makeToast(getString(R.string.offline_warning));
-
 					}
 				}
 			}
-
 		});
-
 	}
 
-	/**
-	 * It creates a Dialog asking the user if they really want to cancel the
-	 * task. If the user clicks "YES" the execute function of the CancelTask
-	 * class is called. If they click "NO" the dialog disappears and nothing
-	 * happens.
-	 * 
-	 */
 	private void cancelTask() {
+		
 		new AlertDialog.Builder(this)
 				.setCancelable(false)
 				.setMessage(R.string.cancel_task_question)
 				.setPositiveButton(R.string.yes,
 						new DialogInterface.OnClickListener() {
+					
 							public void onClick(DialogInterface dialog,
 									int which) {
-
 								mCancelTaskButton
 										.setBackgroundResource(color.android_dark_red);
 								TextView tv = (TextView) mTransferDetailsDialog
@@ -221,10 +200,8 @@ public class MonitorActivity extends BaseActivity {
 									int which) {
 								mCancelTaskButton
 										.setBackgroundResource(color.android_dark_red);
-
 							}
 						}).show();
-
 	}
 
 	public void sortList(View view) {
@@ -238,6 +215,7 @@ public class MonitorActivity extends BaseActivity {
 	}
 
 	private void initializeSettingsDialog() {
+
 		mSettingsDialog = new Dialog(this);
 		mSettingsDialog.setCanceledOnTouchOutside(false);
 		mSettingsDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -272,10 +250,10 @@ public class MonitorActivity extends BaseActivity {
 				mSharedPreferences, "failed"));
 		mSucceededCheckBox.setOnCheckedChangeListener(new CheckBoxListener(
 				mSharedPreferences, "suceeded"));
-
 	}
 
 	private void initializeView() {
+
 		mTitleTextView = (TextView) findViewById(R.id.monitor_title);
 		mTitleTextView.setText(String.format("%s", mUsername));
 		mTasksListView = (ListView) findViewById(R.id.tasks_list);
@@ -284,9 +262,7 @@ public class MonitorActivity extends BaseActivity {
 		mLoadingProgressBar = (ProgressBar) findViewById(R.id.loading_tasks_progress_bar);
 		mContext = this;
 		mTasksListView.setOnItemClickListener(new ListListener());
-
 		sListSortFlag = 1;
-
 	}
 
 	private void loadStoredPreferences() {
@@ -332,13 +308,13 @@ public class MonitorActivity extends BaseActivity {
 	}
 
 	private void createSettinsMenuListeners() {
+
 		mNumberOfTasksRadioGroup
 				.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 
 					@Override
 					public void onCheckedChanged(RadioGroup group, int checkedId) {
 
-		
 						SharedPreferences.Editor editor = mSharedPreferences
 								.edit();
 
@@ -357,7 +333,6 @@ public class MonitorActivity extends BaseActivity {
 							break;
 						default:
 							break;
-
 						}
 						editor.commit();
 					}
@@ -421,9 +396,9 @@ public class MonitorActivity extends BaseActivity {
 	}
 
 	private void loadSavedTasks(Bundle savedInstanceState) {
+
 		mTasksList = savedInstanceState.getStringArrayList("tasksList");
 		try {
-
 			sTasksJsonArray = new JSONArray(
 					savedInstanceState.getString("tasksJSONArray"));
 			adapter = new TaskListAdapter(mContext,
@@ -437,14 +412,12 @@ public class MonitorActivity extends BaseActivity {
 	}
 
 	private void retrieveTasksList(Bundle savedInstanceState) {
+	
 		if (savedInstanceState != null) {
-
 			loadSavedTasks(savedInstanceState);
 		} else {
-
 			new GetTasksList().execute();
 		}
-
 	}
 
 	@Override
@@ -455,24 +428,12 @@ public class MonitorActivity extends BaseActivity {
 		outState.putString("tasksJSONArray", sTasksJsonArray.toString());
 	}
 
-	/**
-	 * This class attempts to get a list with the tasks submitted by the user by
-	 * sending a GET query to /task_list along with some request parameters
-	 * regarding the number, the type and the status of the tasks we are
-	 * interested in. A progress bar appears while communicating with the
-	 * server.If there is any type of error in retrieving the tasks the user in
-	 * notified with a Toast message.
-	 * 
-	 * @author christos
-	 * 
-	 */
 	private class GetTasksList extends AsyncTask<String, Void, String> {
 
 		@Override
 		protected void onPreExecute() {
 
 			super.onPreExecute();
-
 			mTasksListView.setAdapter(null);
 			mTasksList.clear();
 			mLoadingProgressBar.setVisibility(View.VISIBLE);
@@ -525,18 +486,18 @@ public class MonitorActivity extends BaseActivity {
 		}
 
 		private void populateTaskList(JSONObject jO) throws JSONException {
-			sTasksJsonArray = jO.getJSONArray("DATA");
 
+			sTasksJsonArray = jO.getJSONArray("DATA");
 			for (int i = 0; i < sTasksJsonArray.length(); i++) {
 
 				String taskId = sTasksJsonArray.getJSONObject(i).getString(
 						"task_id");
 				mTasksList.add(taskId);
 			}
-
 		}
 
 		private Map<String, String> getRequestParameters() {
+
 			Map<String, String> mRequestParams = new HashMap<>();
 			String mNumberOfTasks;
 			String mFilter;
@@ -546,15 +507,9 @@ public class MonitorActivity extends BaseActivity {
 				mFilter = "type:TRANSFER/status:";
 			}
 
-			// An extra filter is added which defines the number of tasks
-			// that
-			// will appear on the screen, based on user's settings
 			mNumberOfTasks = mSharedPreferences.getString("Number_of_tasks",
 					"10");
 
-			// This filter defines the type of tasks that will appear, based
-			// on
-			// user's settings
 			if (mSharedPreferences.getBoolean("active", true)) {
 				mFilter = mFilter.concat("ACTIVE,");
 			}
@@ -582,18 +537,8 @@ public class MonitorActivity extends BaseActivity {
 			mRequestParams.put("limit", mNumberOfTasks);
 			return mRequestParams;
 		}
-
 	}
 
-	/**
-	 * This class creates a window which informs the user with details of the
-	 * task they clicked on, like source endpoint, destination endpoint, status,
-	 * submission time, deadline time, status of its subtasks etc. A Cancel
-	 * Button also appears if the task's status is either "ACTIVE" or "INACTIVE"
-	 * 
-	 * @author christos
-	 * 
-	 */
 	private class ListListener implements OnItemClickListener {
 
 		JSONObject mTask;
@@ -853,16 +798,6 @@ public class MonitorActivity extends BaseActivity {
 
 	}
 
-	/**
-	 * 
-	 * This class attempts to cancel an active task with POSTing an empty JSON
-	 * Object to task/<task_id>/cancel. The user is informed for the query's
-	 * result with a Toast message. If the task is cancelled successfully the
-	 * settings window closes and the tasks list is updated.
-	 * 
-	 * @author christos
-	 * 
-	 */
 	private class CancelTask extends AsyncTask<String, Void, String> {
 
 		@Override
@@ -890,7 +825,7 @@ public class MonitorActivity extends BaseActivity {
 		}
 
 		private String cancelTask(String taskName) {
-		
+
 			String result;
 			try {
 				result = attemptCancelTask(taskName);
@@ -905,29 +840,24 @@ public class MonitorActivity extends BaseActivity {
 		private String attemptCancelTask(String taskName) throws JSONException,
 				MalformedURLException, IOException, GeneralSecurityException,
 				APIError {
-		
+
 			String result = getString(R.string.error);
 			Result mQueryResult;
 			JSONObject mJsonObject = new JSONObject();
-
 			mQueryResult = sClient.postResult("/task/" + taskName + "/cancel",
 					mJsonObject);
-
 			mJsonObject = mQueryResult.document;
-
 			if (!mJsonObject.getString("DATA_TYPE").equals("result")) {
 				return result;
 			}
-
 			result = mJsonObject.getString("message");
 			return result;
 		}
 
 		private boolean isSuccessfull(String result) {
+	
 			return result.endsWith("successfully.");
-
 		}
-
 	}
 
 	/**
@@ -978,7 +908,7 @@ public class MonitorActivity extends BaseActivity {
 		private String attemptUpdateLabel(String labelName)
 				throws JSONException, MalformedURLException, IOException,
 				GeneralSecurityException, APIError {
-	
+
 			Result mQueryResult;
 			JSONObject mJsonObject = new JSONObject();
 

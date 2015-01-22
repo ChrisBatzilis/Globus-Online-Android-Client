@@ -64,9 +64,9 @@ public class EndpointActivity extends ListActivity {
 
 	@Override
 	protected void onDestroy() {
+		
 		super.onDestroy();
 		mFilterTextEditText.removeTextChangedListener(filterTextWatcher);
-
 	}
 
 	/**
