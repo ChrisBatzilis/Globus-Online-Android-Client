@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.globusonline.transfer.APIError;
-import org.globusonline.transfer.JSONTransferAPIClient.Result;
 import org.json.JSONException;
 import org.json.JSONObject;
 
