@@ -1,4 +1,4 @@
-package org.globus.globustransfer.Client;
+package org.globus.globustransfer.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
