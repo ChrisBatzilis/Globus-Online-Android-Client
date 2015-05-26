@@ -64,6 +64,7 @@ public class MainActivity extends BaseActivity {
 	}
 
 	private void goToSignUp() {
+		
 		Uri mUri = Uri.parse(sGlobusOnlineSignUpURI);
 		Intent mIntent = new Intent(Intent.ACTION_VIEW, mUri);
 		startActivity(mIntent);
@@ -82,6 +83,7 @@ public class MainActivity extends BaseActivity {
 	}
 
 	public void setSavedCredentials(View view) {
+		
 		if (mSwitch) {
 			writeSavedCredentialsToFields();
 		} else {
@@ -91,14 +93,15 @@ public class MainActivity extends BaseActivity {
 	}
 
 	private void writeSavedCredentialsToFields() {
+		
 		mUsernameTextView.setText(mSharedPreferences.getString("username", ""));
 		mPasswordTextView.setText(mSharedPreferences.getString("password", ""));
 	}
 
 	private void clearCredentialsFromFields() {
+		
 		mUsernameTextView.setText("");
 		mPasswordTextView.setText("");
-
 	}
 
 	private boolean isSigninPrerequisitesSatisfied(String username,
