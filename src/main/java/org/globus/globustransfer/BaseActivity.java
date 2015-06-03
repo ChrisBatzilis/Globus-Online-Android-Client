@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import org.globus.globustransfer.Client.JSONClient;
+import org.globus.globustransfer.client.JSONClient;
 
 public class BaseActivity extends Activity {
 
