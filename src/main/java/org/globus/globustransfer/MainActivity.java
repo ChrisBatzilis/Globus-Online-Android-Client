@@ -48,30 +48,24 @@ public class MainActivity extends BaseActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Do nothing when the menu button is pressed
-		return true;
+		return true;	// Do nothing when the menu button is pressed
 	}
 
 	public void goToGlobusOnlineSignUp(View view) {
-
 		if (isInternetConnectionAvailable()) {
-
 			goToSignUp();
 		} else {
-
 			makeToast(mNetworkNotAvailable);
 		}
 	}
 
 	private void goToSignUp() {
-		
 		Uri mUri = Uri.parse(sGlobusOnlineSignUpURI);
 		Intent mIntent = new Intent(Intent.ACTION_VIEW, mUri);
 		startActivity(mIntent);
 	}
 
 	public void signIn(View view) {
-
 		String username = mUsernameTextView.getText().toString();
 		String password = mPasswordTextView.getText().toString();
 
@@ -79,11 +73,9 @@ public class MainActivity extends BaseActivity {
 			return;
 		}
 		new signInAttempt().execute(username, password);
-
 	}
 
-	public void setSavedCredentials(View view) {
-		
+	public void setSavedCredentials(View view) {	
 		if (mSwitch) {
 			writeSavedCredentialsToFields();
 		} else {
@@ -93,13 +85,11 @@ public class MainActivity extends BaseActivity {
 	}
 
 	private void writeSavedCredentialsToFields() {
-		
 		mUsernameTextView.setText(mSharedPreferences.getString("username", ""));
 		mPasswordTextView.setText(mSharedPreferences.getString("password", ""));
 	}
 
 	private void clearCredentialsFromFields() {
-		
 		mUsernameTextView.setText("");
 		mPasswordTextView.setText("");
 	}
@@ -131,7 +121,6 @@ public class MainActivity extends BaseActivity {
 
 		@Override
 		protected void onPreExecute() {
-
 			super.onPreExecute();
 			hideSignInRelatedViewItems();
 			mAttemptLogInProgressBar.setVisibility(View.VISIBLE);
@@ -139,7 +128,6 @@ public class MainActivity extends BaseActivity {
 
 		@Override
 		protected String doInBackground(String... credentials) {
-
 			SignInService signInService = new SignInServiceImpl();
 			try {
 				return signInService.signIn(credentials[0], credentials[1]);
@@ -147,14 +135,11 @@ public class MainActivity extends BaseActivity {
 				success = false;
 				return getString(R.string.login_fail_warning);
 			}
-
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
-
 			super.onPostExecute(result);
-
 			if (success) {
 				goToMenu(result);
 			} else {
@@ -165,7 +150,6 @@ public class MainActivity extends BaseActivity {
 		}
 
 		private void goToMenu(String authToken) {
-
 			Intent intent = new Intent(mContext, MenuActivity.class);
 			Bundle bundle = new Bundle();
 			bundle.putString("username", mUsernameTextView.getText().toString());
@@ -178,23 +162,19 @@ public class MainActivity extends BaseActivity {
 		}
 
 		private void saveCredentials() {
-
 			SharedPreferences.Editor editor = mSharedPreferences.edit();
 			editor.putString("username", mUsernameTextView.getText().toString());
 			editor.putString("password", mPasswordTextView.getText().toString());
 			editor.commit();
-
 		}
 
 		private void hideSignInRelatedViewItems() {
-
 			mLogInButton = (Button) findViewById(R.id.log_in_button);
 			makeInvisible(mUsernameTextView, mPasswordTextView, mLogInButton,
 					mRememberMeCheckBox, mRememberMeTextView);
 		}
 
 		private void blendSignInRelatedViewItems() {
-
 			makeVisible(mUsernameTextView, mPasswordTextView, mLogInButton,
 					mRememberMeCheckBox, mRememberMeTextView);
 		}
