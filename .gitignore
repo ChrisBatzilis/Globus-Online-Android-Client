@@ -16,3 +16,6 @@ hs_err_pid*
 #binary and generated files
 bin/
 gen/
+
+#test resources
+tests/**/res
