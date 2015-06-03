@@ -29,7 +29,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import org.globus.globustransfer.R.color;
-import org.globus.globustransfer.Client.JSONClient.Result;
+import org.globus.globustransfer.client.JSONClient.Result;
 import org.globus.globustransfer.adapters.TaskListAdapter;
 import org.globus.globustransfer.comparators.TransferRateComparator;
 import org.globus.globustransfer.listeners.CheckBoxListener;

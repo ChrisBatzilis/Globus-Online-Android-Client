@@ -30,8 +30,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.globus.globustransfer.Client.JSONClient;
-import org.globus.globustransfer.Client.JSONClient.Result;
+import org.globus.globustransfer.client.JSONClient;
+import org.globus.globustransfer.client.JSONClient.Result;
 import org.globus.globustransfer.services.RateService;
 import org.globus.globustransfer.services.RateServiceImpl;
 import org.globusonline.transfer.APIError;
