@@ -12,13 +12,11 @@ import android.widget.Toast;
 import org.globus.globustransfer.client.JSONClient;
 
 public class BaseActivity extends Activity {
-
 	protected String mUsername;
 	protected String mAuthToken;
 	protected JSONClient sClient;
 
 	protected boolean isInternetConnectionAvailable() {
-
 		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetworkInfo = connectivityManager
 				.getActiveNetworkInfo();
@@ -29,23 +27,19 @@ public class BaseActivity extends Activity {
 	 * Creates a short-lived message on the screen.
 	 */
 	protected void makeToast(String text) {
-
-		Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+		makeToast(text,Toast.LENGTH_SHORT);
 	}
 
 	protected void makeToast(String text, int duration) {
-
 		Toast.makeText(this, text, duration).show();
 	}
 
 	protected void makeOfflineToast() {
-
 		Toast.makeText(this, getString(R.string.offline_warning),
 				Toast.LENGTH_SHORT).show();
 	}
 
-	protected void retrieveUsernameAndToken() {
-		
+	protected void retrieveUsernameAndToken() {	
 		Intent mIntent = getIntent();
 		Bundle mInfo = mIntent.getExtras();
 		mUsername = mInfo.getString("username");
@@ -53,7 +47,6 @@ public class BaseActivity extends Activity {
 	}
 
 	protected void createJsonClient() {
-	
 		try {
 			sClient = new JSONClient(mUsername, mAuthToken);
 		} catch (Exception e) {
@@ -61,15 +54,13 @@ public class BaseActivity extends Activity {
 		}
 	}
 
-	protected void makeVisible(View... views) {
-		
+	protected void makeVisible(View... views) {	
 		for (View view : views) {
 			view.setVisibility(View.VISIBLE);
 		}
 	}
 
 	protected void makeInvisible(View... views) {
-		
 		for (View view : views) {
 			view.setVisibility(View.INVISIBLE);
 		}
