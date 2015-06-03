@@ -22,8 +22,7 @@ public class EndpointActivity extends ListActivity {
 	private ArrayAdapter<String> mAdapter = null;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		
+	protected void onCreate(Bundle savedInstanceState) {	
 		super.onCreate(savedInstanceState);
 		getWindow().setFlags(LayoutParams.FLAG_NOT_TOUCH_MODAL,
 				LayoutParams.FLAG_NOT_TOUCH_MODAL);
@@ -59,12 +58,10 @@ public class EndpointActivity extends ListActivity {
 				int count) {
 			mAdapter.getFilter().filter(s);
 		}
-
 	};
 
 	@Override
-	protected void onDestroy() {
-		
+	protected void onDestroy() {		
 		super.onDestroy();
 		mFilterTextEditText.removeTextChangedListener(filterTextWatcher);
 	}
@@ -77,7 +74,6 @@ public class EndpointActivity extends ListActivity {
 	 **/
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-
 		super.onListItemClick(l, v, position, id);
 		Intent mIntent = getIntent();
 		String mSelectedEndpoint = (String) getListAdapter().getItem(position);
@@ -94,8 +90,7 @@ public class EndpointActivity extends ListActivity {
 	 * takes no action whatsoever.
 	 * */
 	@Override
-	public void onBackPressed() {
-		
+	public void onBackPressed() {	
 		Intent mIntent = getIntent();
 		mIntent.putExtra("endpoint1", "sample");
 		setResult(RESULT_OK, mIntent);
@@ -108,9 +103,7 @@ public class EndpointActivity extends ListActivity {
 	 */
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-
 		if (MotionEvent.ACTION_OUTSIDE == event.getAction()) {
-
 			return true;
 		}
 		return super.onTouchEvent(event);
